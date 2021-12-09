@@ -8,9 +8,11 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandPermissionType,
 } from "discord-api-types/v9";
-import { Channel, CommandInteraction, Role, User } from "discord.js";
+import { ButtonInteraction, Channel, CommandInteraction, Role, User } from "discord.js";
+import { v4 as uuid } from "uuid";
 
 export interface Command<
+  State,
   Options extends APIApplicationCommandOption[] | readonly APIApplicationCommandOption[] =
     | APIApplicationCommandOption[]
     | readonly APIApplicationCommandOption[],
@@ -20,7 +22,25 @@ export interface Command<
   description: string;
   type?: ApplicationCommandPermissionType;
   default_permission?: boolean;
-  handler: (interaction: CommandInteraction, commandOptions: OptionsMap<Options>) => void;
+  handler: (
+    interaction: CommandInteraction,
+    commandOptions: OptionsMap<Options>,
+    setState: (state: State) => void,
+    getState: () => State,
+    id: string,
+  ) => void;
+  run: (interaction: CommandInteraction, commandOptions: OptionsMap<Options>) => void;
+  runButtonAction: (interacton: ButtonInteraction, instanceId: string, id: string) => void;
+  buttonAction: (
+    interacton: ButtonInteraction,
+    setState: (state: State) => void,
+    getState: () => State,
+    instanceId: string,
+    id: string,
+  ) => void;
+  commandId: string;
+  category?: string;
+  permittedRoles?: string[];
 }
 export type OptionTypeMap = {
   [ApplicationCommandOptionType.Boolean]: boolean;
@@ -34,15 +54,26 @@ export type OptionTypeMap = {
   [ApplicationCommandOptionType.SubcommandGroup]: any;
   [ApplicationCommandOptionType.User]: User;
 };
+
+type SingleOptionMap<
+  Index extends number,
+  Options extends APIApplicationCommandOption[] | readonly APIApplicationCommandOption[],
+> = { [P in Options[Index]["name"]]: OptionTypeMap[Options[Index]["type"]] };
+
 export type OptionsMap<
   Options extends APIApplicationCommandOption[] | readonly APIApplicationCommandOption[],
-> = Record<Options[number]["name"], OptionTypeMap[Options[number]["type"]]>;
+> = SingleOptionMap<0, Options> &
+  SingleOptionMap<1, Options> &
+  SingleOptionMap<2, Options> &
+  SingleOptionMap<3, Options> &
+  SingleOptionMap<4, Options> &
+  SingleOptionMap<5, Options>;
 
 const rest = new REST({ version: "9" }).setToken(process.env.TOKEN ?? "");
 
-export const commands = new Map<string, Command>();
+export const commands = new Map<string, Command<any>>();
 
-export const mapCommandToAPI = (value: Command): Partial<APIApplicationCommand> => ({
+export const mapCommandToAPI = (value: Command<any>): Partial<APIApplicationCommand> => ({
   name: value.name,
   description: value.description,
   options: value.options as any,
@@ -59,7 +90,34 @@ export const registerCommands = async (CLIENT_ID: string) => {
       const file = files[i];
       if (file.endsWith(".command.ts") || file.endsWith(".command.js")) {
         const module = await import(join(__dirname, file));
-        commands.set(module.name, module);
+        let state: Record<string, any> = {};
+        commands.set(module.name, {
+          ...module,
+          run(interaction, commandOptions) {
+            const id = uuid();
+            state[id] = null;
+            this.handler(
+              interaction,
+              commandOptions,
+              (v) => {
+                state[id] = v;
+              },
+              () => state[id],
+              id,
+            );
+          },
+          runButtonAction(interaction, instance, id) {
+            this.buttonAction(
+              interaction,
+              (v) => {
+                state[instance] = v;
+              },
+              () => state[instance],
+              instance,
+              id,
+            );
+          },
+        });
         commandsArray.push(mapCommandToAPI(module));
       }
     }

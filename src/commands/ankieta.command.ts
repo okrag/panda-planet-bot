@@ -88,7 +88,6 @@ export const buttonAction = (
   id: string,
   buttonId: string,
 ) => {
-  console.log(buttonId);
   const { embed, yes, no, message } = getState();
   if (buttonId === "yesButton") {
     if (yes.has(interaction.user.id))

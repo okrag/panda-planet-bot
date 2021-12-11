@@ -155,7 +155,13 @@ export const buttonAction = async (
   id: string,
   buttonId: string,
 ) => {
-  const { embed, responses, message, options } = getState();
+  const state = getState();
+  if (!state)
+    return interaction.reply({
+      content: "Wystąpił błąd podczas głosowania",
+      ephemeral: true,
+    });
+  const { embed, responses, message, options } = state;
   const option = options.find(({ name }) => name === buttonId);
 
   if (!option) return interaction.reply({ content: "Wystąpił błąd", ephemeral: true });

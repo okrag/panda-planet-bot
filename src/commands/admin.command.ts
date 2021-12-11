@@ -1,7 +1,6 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "dbd2ca83-ed2d-47a7-80cd-8750de88ceff";
 export const name = "admin";
 export const description = "Pokazuje listę administracji serwera";
 

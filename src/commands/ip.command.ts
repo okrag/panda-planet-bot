@@ -1,12 +1,13 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "aafe211b-c7d3-4712-810b-7af151e62913";
 export const name = "ip";
 export const description = "Pokazuje ip serwera";
 
 export const handler = async (interaction: CommandInteraction) => {
   const embed = new MessageEmbed();
-  embed.setTitle(`Ip serwera: ${process.env.SERVER_IP}`).setColor("#1AF546");
+  embed
+    .setTitle(`Ip serwera: ${process.env.SERVER_IP}:${process.env.SERVER_PORT}`)
+    .setColor("#1AF546");
   await interaction.reply({ embeds: [embed] });
 };

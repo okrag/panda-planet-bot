@@ -1,8 +1,7 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { getStatus } from "../minecraftConnection";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "14f90b45-e51e-4ce5-95db-ad2d12f56a38";
 export const name = "status";
 export const description = "Pokazuje status serwera";
 
@@ -13,6 +12,12 @@ export const handler = async (interaction: CommandInteraction) => {
   try {
     const status = await getStatus();
     embed.addField("Liczba graczy", `${status.players.online}/${status.players.max}`);
+    if (status.players.sample) {
+      embed.addField("Lista graczy", "\u200B");
+    }
+    status.players.sample?.forEach((player) => {
+      embed.addField("\u200B", player.name);
+    });
   } catch (e) {
     embed.addField("Liczba graczy", "Serwer nie jest włączony");
     embed.setColor("#ff0000");

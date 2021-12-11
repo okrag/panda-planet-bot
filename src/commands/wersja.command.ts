@@ -1,7 +1,6 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "0019f44f-2cae-4c63-9816-f859d51f3a58";
 export const name = "wersja";
 export const description = "Pokazuje wersje serwera";
 

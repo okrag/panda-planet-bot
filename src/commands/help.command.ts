@@ -1,8 +1,7 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { Command, commands } from "./register";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "4719e0d9-dd49-423e-9e33-090cafb826b1";
 export const name = "help";
 export const description = "Pokazuje listę dostępnych komend";
 
@@ -16,7 +15,7 @@ export const handler = async (interaction: CommandInteraction) => {
     .setTitle("Lista komend")
     .setFooter("* do wykonania tej komendy potrzebne są specjalne uprawnienia");
 
-  embed.addField("───────── Komendy Discord ─────────", "─────────────────────────────");
+  embed.addField("───────── Komendy Discord ─────────", "\u200B");
   commandsArray.forEach((command) => {
     embed.addField(
       `${command.permittedRoles ? "*" : ""}/${command.name} ${
@@ -30,7 +29,7 @@ export const handler = async (interaction: CommandInteraction) => {
       command.description,
     );
   });
-  embed.addField("───────── Komendy Minecraft ─────────", "───────────────────────────────");
+  embed.addField("───────── Komendy Minecraft ─────────", "\u200B");
   embed.addField("/report", "Reportowanie gracza");
   await interaction.reply({ embeds: [embed] });
 };

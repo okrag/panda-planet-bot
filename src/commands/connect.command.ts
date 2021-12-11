@@ -7,9 +7,8 @@ import {
   connect,
   ConnectionResponse,
 } from "../minecraftConnection";
-import { v4 as uuid } from "uuid";
 
-export const commandId = uuid();
+export const commandId = "3910d37b-47af-48f7-8252-75f6dae86c67";
 export const name = "connect";
 export const description = "Połączenie konta mc z kontem discord";
 export const options = [
@@ -38,15 +37,20 @@ export const handler = async (
 
     switch (response) {
       case ConnectionResponse.ERROR:
-        return await interaction.reply("Wystąpił nieoczekiwany błąd");
+        return await interaction.reply({ content: "Wystąpił nieoczekiwany błąd", ephemeral: true });
       case ConnectionResponse.NOT_ONLINE:
-        return await interaction.reply(
-          "Żeby połączyć konta musisz być online na serwerze minecraft",
-        );
+        return await interaction.reply({
+          content: "Żeby połączyć konta musisz być online na serwerze minecraft",
+          ephemeral: true,
+        });
+      case ConnectionResponse.ALREADY_CONNECTED:
+        return await interaction.reply({ content: "To konto jest już połączone", ephemeral: true });
       case ConnectionResponse.SUCCESS:
-        return await interaction.reply(
-          "Na chacie w minecrafcie powinien pojawić Ci się kod, który musisz wpisać w: /connect <nick> <kod>",
-        );
+        return await interaction.reply({
+          content:
+            "Na chacie w minecrafcie powinien pojawić Ci się kod, który musisz wpisać w: /connect <nick> <kod>",
+          ephemeral: true,
+        });
     }
   }
 
@@ -58,10 +62,10 @@ export const handler = async (
 
   switch (response) {
     case AcceptConnectionResponse.ERROR:
-      return await interaction.reply("Wystąpił nieoczekiwany błąd");
+      return await interaction.reply({ content: "Wystąpił nieoczekiwany błąd", ephemeral: true });
     case AcceptConnectionResponse.WRONG_CODE:
-      return await interaction.reply("Zły kod");
+      return await interaction.reply({ content: "Zły kod", ephemeral: true });
     case AcceptConnectionResponse.SUCCESS:
-      return await interaction.reply("Pomyślnie połączono konta");
+      return await interaction.reply({ content: "Pomyślnie połączono konta", ephemeral: true });
   }
 };

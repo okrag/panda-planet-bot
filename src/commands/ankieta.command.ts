@@ -100,7 +100,7 @@ export const handler = async (
   interaction: CommandInteraction,
   commandOptions: OptionsMap<typeof options>,
   setState: (state: State) => Promise<void>,
-  getState: () => State,
+  getState: () => State | undefined,
   id: string,
 ) => {
   const options = commandOptions.opcje.split(",").map((option) => {
@@ -151,7 +151,7 @@ export const handler = async (
 export const buttonAction = async (
   interaction: ButtonInteraction,
   setState: (state: State) => Promise<void>,
-  getState: () => State,
+  getState: () => State | undefined,
   id: string,
   buttonId: string,
 ) => {

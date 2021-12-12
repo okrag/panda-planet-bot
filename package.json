@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon -e ts src/index.ts",
-    "build": "tsc",
+    "build": "rm build -rf && tsc",
     "start": "node build/index.js"
   },
   "author": "Okrag",

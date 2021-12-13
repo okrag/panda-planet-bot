@@ -47,16 +47,21 @@ interface FileState {
   closed: boolean;
 }
 
-export const fileEncode = async (state: State): Promise<FileState | null> => ({
-  closed: state.closed,
-  message: state.message.id,
-  channel: state.message.channelId,
-});
-export const fileDecode = async (state: FileState, client: Client): Promise<State | null> => {
+export const fileEncode = async (state: State): Promise<FileState | undefined> =>
+  state === null
+    ? undefined
+    : {
+        closed: state.closed,
+        message: state.message.id,
+        channel: state.message.channelId,
+      };
+export const fileDecode = async (state: FileState, client: Client): Promise<State | undefined> => {
   const guild = await client.guilds.fetch(process.env.GUILD_ID ?? "");
   const channel = await guild.channels.fetch(state.channel);
-  if (!channel?.isText()) return null;
+  if (!channel?.isText()) return undefined;
   const message = await channel.messages.fetch(state.message);
+
+  if (!message) return undefined;
 
   return {
     message,
@@ -99,10 +104,10 @@ export const handler = async (
 
 export const buttonAction = async (
   interaction: ButtonInteraction,
-  setState: (state: State) => Promise<void>,
+  setState: (state?: State) => Promise<void>,
   getState: () => State | undefined,
   id: string,
-  buttonId: string,
+  buttonId: "delete" | "action",
 ) => {
   const state = getState();
   if (!state)
@@ -112,15 +117,28 @@ export const buttonAction = async (
     });
   const { embed, message, closed } = state;
 
+  if (buttonId === "delete") {
+    await message.delete();
+    await setState(undefined);
+    await interaction.reply({ content: "Done", ephemeral: true });
+    return;
+  }
+
   embed.fields[1].value = closed ? ":x:" : ":white_check_mark:";
   embed.setColor(closed ? "#ff0000" : "#1AF546");
 
   const action = new MessageActionRow();
   const button = new MessageButton()
     .setStyle(MessageButtonStyles.PRIMARY)
-    .setLabel(closed ? "Zrobione" : "Usuń")
+    .setLabel(closed ? "Zrobione" : "Cofnij")
     .setCustomId(`${commandId};${id};action`);
-  action.addComponents(button);
+
+  const deleteButton = new MessageButton()
+    .setStyle(MessageButtonStyles.DANGER)
+    .setLabel("Usuń")
+    .setCustomId(`${commandId};${id};delete`);
+  if (!closed) action.addComponents(button, deleteButton);
+  else action.addComponents(button);
 
   message.edit({
     content: message.content || undefined,

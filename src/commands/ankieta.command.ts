@@ -60,7 +60,7 @@ interface FileState {
   responses: Record<string, string[]>;
 }
 
-export const fileEncode = async (state: State): Promise<FileState | null> => {
+export const fileEncode = async (state: State): Promise<FileState | undefined> => {
   const responses: Record<string, string[]> = {};
   for (const key in state.responses) {
     if (Object.prototype.hasOwnProperty.call(state.responses, key)) {
@@ -74,10 +74,10 @@ export const fileEncode = async (state: State): Promise<FileState | null> => {
     channel: state.message.channelId,
   };
 };
-export const fileDecode = async (state: FileState, client: Client): Promise<State | null> => {
+export const fileDecode = async (state: FileState, client: Client): Promise<State | undefined> => {
   const guild = await client.guilds.fetch(process.env.GUILD_ID ?? "");
   const channel = await guild.channels.fetch(state.channel);
-  if (!channel?.isText()) return null;
+  if (!channel?.isText()) return undefined;
   const message = await channel.messages.fetch(state.message);
 
   const responses: Record<string, Set<string>> = {};

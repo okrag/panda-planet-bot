@@ -107,7 +107,7 @@ export const registerCommands = async (CLIENT_ID: string, client: Client) => {
             state = JSON.parse((await readFile(filePath)).toString());
             for (const key in state) {
               if (Object.prototype.hasOwnProperty.call(state, key)) {
-                state[key] = (await module.fileDecode(state[key], client)) ?? state[key];
+                state[key] = await module.fileDecode(state[key], client);
               }
             }
           } catch (e) {
@@ -119,7 +119,7 @@ export const registerCommands = async (CLIENT_ID: string, client: Client) => {
           const mappedState: Record<string, any> = {};
           for (const key in state) {
             if (Object.prototype.hasOwnProperty.call(state, key)) {
-              mappedState[key] = (await module.fileEncode(state[key])) ?? mappedState[key];
+              mappedState[key] = await module.fileEncode(state[key]);
             }
           }
           await writeFile(filePath, JSON.stringify(mappedState));

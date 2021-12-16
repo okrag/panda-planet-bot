@@ -41,5 +41,5 @@ export const setup = async (client: Client) => {
         logsChannel.send({ embeds: [embed] });
       }
     });
-  }, 10000);
+  }, 10 * 1000);
 };

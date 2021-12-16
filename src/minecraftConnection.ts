@@ -49,6 +49,7 @@ export interface Event {
 }
 
 export const getEvents = async (): Promise<Event[]> => {
+  console.log("Fetching events from minecraft server");
   const events: Event[] = await (async () => {
     try {
       return JSON.parse(await send("discord_connection_events"));

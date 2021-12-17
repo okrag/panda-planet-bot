@@ -47,6 +47,7 @@ export const setup = async (client: Client) => {
           .setTitle("Log śmierci")
           .setColor("#ff0000")
           .addField("Gracz", event.user)
+          .addField("Powód śmierci", event.data.damageCause)
           .addField("Komunikat o śmierci", event.data.deathMessage);
 
         if (event.data.killerType) embed.addField("Rodzaj zabójcy", event.data.killerType);

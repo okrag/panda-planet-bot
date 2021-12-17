@@ -39,6 +39,17 @@ export const setup = async (client: Client) => {
           .addField("Event", event.data)
           .setFooter(new Date(event.timestamp).toLocaleString());
         logsChannel.send({ embeds: [embed] });
+      } else if (event.type === "death") {
+        const embed = new MessageEmbed()
+          .setTitle("Log śmierci")
+          .setColor("#ff0000")
+          .addField("Gracz", event.user)
+          .addField("Komunikat o śmierci", event.data.deathMessage);
+
+        if (event.data.killerType) embed.addField("Rodzaj zabójcy", event.data.killerType);
+        if (event.data.killerName) embed.addField("Nazwa zabójcy", event.data.killerName);
+
+        logsChannel.send({ embeds: [embed] });
       }
     });
   }, 10 * 1000);

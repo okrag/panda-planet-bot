@@ -18,6 +18,10 @@ export const setup = async (client: Client) => {
     .get(process.env.LOGS_CHANNEL_ID ?? "")
     ?.fetch()) as Channel;
   if (!logsChannel.isText()) return;
+  const deathsChannel = (await guild?.channels.cache
+    .get(process.env.DEATHS_CHANNEL_ID ?? "")
+    ?.fetch()) as Channel;
+  if (!deathsChannel.isText()) return;
   setInterval(async () => {
     await prepareGetMember(guild);
     const events = await getEvents();
@@ -33,10 +37,9 @@ export const setup = async (client: Client) => {
         reportsChannel.send({ content: "@here", embeds: [embed] });
       } else if (event.type === "log") {
         const embed = new MessageEmbed()
-          .setTitle("Log")
+          .setTitle((event.data as string).charAt(0).toUpperCase() + event.data.slice(1))
           .setColor("#ff0000")
           .addField("Gracz", event.user)
-          .addField("Event", event.data)
           .setFooter(new Date(event.timestamp).toLocaleString());
         logsChannel.send({ embeds: [embed] });
       } else if (event.type === "death") {
@@ -49,7 +52,7 @@ export const setup = async (client: Client) => {
         if (event.data.killerType) embed.addField("Rodzaj zabójcy", event.data.killerType);
         if (event.data.killerName) embed.addField("Nazwa zabójcy", event.data.killerName);
 
-        logsChannel.send({ embeds: [embed] });
+        deathsChannel.send({ embeds: [embed] });
       }
     });
   }, 10 * 1000);

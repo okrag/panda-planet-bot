@@ -108,9 +108,10 @@ export class EventHandler extends (EventEmitter as new () => TypedEventEmitter<E
       const events: AnyEvent[] = JSON.parse(
         await Rcon.connection.send("discord_connection_events"),
       );
-      await Rcon.connection.send(
-        "discord_connection_acknowledge " + events.map((e) => e.id).join(";"),
-      );
+      if (events.length > 0)
+        await Rcon.connection.send(
+          "discord_connection_acknowledge " + events.map((e) => e.id).join(";"),
+        );
       return events;
     } catch (e) {
       return [];

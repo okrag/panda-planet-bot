@@ -127,10 +127,20 @@ const entityTypesTranslationsMap: Partial<Record<EntityType, string>> = {
   ARROW: "Strzała",
   WOLF: "Wilk",
 };
+const damageCauseTranslationsMap: Partial<Record<DamageCause, string>> = {
+  ENTITY_ATTACK: "Atak bytu",
+  SUICIDE: "Samobójstwo",
+};
 
 export const entityTypesTranslations = (type: EntityType) =>
   entityTypesTranslationsMap[type] ??
   type
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+export const damageCauseTranslations = (cause: DamageCause) =>
+  damageCauseTranslationsMap[cause] ??
+  cause
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");

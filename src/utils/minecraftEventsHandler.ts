@@ -2,7 +2,7 @@ import { Client, MessageEmbed } from "discord.js";
 import { getGuild } from "./getGuild";
 import { getTextChannels } from "./getTextChannel";
 import { EventHandler } from "./minecraftConnection";
-import { entityTypesTranslations } from "./minecraftTypes";
+import { damageCauseTranslations, entityTypesTranslations } from "./minecraftTypes";
 import { removeFormatting } from "./removeFormatting";
 
 export const setup = async (client: Client) => {
@@ -47,7 +47,7 @@ export const setup = async (client: Client) => {
       .setTitle("Log śmierci")
       .setColor("#ff0000")
       .addField("Gracz", removeFormatting(event.user))
-      .addField("Powód śmierci", event.data.damageCause)
+      .addField("Powód śmierci", damageCauseTranslations(event.data.damageCause))
       .addField("Komunikat o śmierci", removeFormatting(event.data.deathMessage))
       .setFooter(new Date(event.timestamp).toLocaleString());
 

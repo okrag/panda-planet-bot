@@ -16,6 +16,8 @@ export enum AcceptConnectionResponse {
   ERROR,
 }
 
+const RECONNECTION_INTERVAL = 5 * 60 * 1000;
+
 export class Rcon {
   currentConnection?: MinecraftServer.RCON;
   connectionTimeout!: NodeJS.Timeout;
@@ -50,7 +52,7 @@ export class Rcon {
     this.connectionTimeout = setTimeout(async () => {
       await this.disconnect();
       this.connect();
-    }, 1000 * 60);
+    }, RECONNECTION_INTERVAL);
     return this;
   }
   async disconnect() {

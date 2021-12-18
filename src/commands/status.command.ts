@@ -1,5 +1,6 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { getStatus } from "../utils/minecraftConnection";
+import { removeFormatting } from "../utils/removeFormatting";
 
 export const commandId = "14f90b45-e51e-4ce5-95db-ad2d12f56a38";
 export const name = "status";
@@ -16,7 +17,7 @@ export const handler = async (interaction: CommandInteraction) => {
       embed.addField("Lista graczy", "\u200B");
     }
     status.players.sample?.forEach((player) => {
-      embed.addField("\u200B", player.name);
+      embed.addField(removeFormatting(player.name), "--------");
     });
   } catch (e) {
     embed.addField("Liczba graczy", "Serwer nie jest włączony");

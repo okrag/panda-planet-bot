@@ -1,12 +1,8 @@
 import { ApplicationCommandOptionType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
 import { OptionsMap } from "./register";
-import {
-  acceptConnection,
-  AcceptConnectionResponse,
-  connect,
-  ConnectionResponse,
-} from "../minecraftConnection";
+import { AcceptConnectionResponse, ConnectionResponse } from "../utils/minecraftConnection";
+import { acceptConnection, connect } from "../utils/accountConnection";
 
 export const commandId = "3910d37b-47af-48f7-8252-75f6dae86c67";
 export const name = "connect";

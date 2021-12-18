@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 import { Client, GuildMemberRoleManager, Intents } from "discord.js";
 import { commands, registerCommands } from "./commands/register";
-import { setup } from "./minecraftReportsAndLogs";
+import { setup } from "./utils/minecraftEventsHandler";
 
 const client = new Client({
   intents: [
@@ -17,7 +17,7 @@ const client = new Client({
 client.on("ready", async (client) => {
   console.log(`Logged in as ${client.user?.tag}!`);
 
-  await registerCommands(client.application?.id ?? "", client);
+  await registerCommands(client);
   setup(client);
 });
 

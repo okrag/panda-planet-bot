@@ -1,5 +1,5 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
-import { getStatus } from "../minecraftConnection";
+import { getStatus } from "../utils/minecraftConnection";
 
 export const commandId = "14f90b45-e51e-4ce5-95db-ad2d12f56a38";
 export const name = "status";

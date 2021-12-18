@@ -91,8 +91,9 @@ export const mapCommandToAPI = (value: Command<any>): Partial<APIApplicationComm
   type: value.type as any,
 });
 
-export const registerCommands = async (CLIENT_ID: string, client: Client) => {
+export const registerCommands = async (client: Client) => {
   const commandsArray: Partial<APIApplicationCommand>[] = [];
+  const CLIENT_ID = client.application?.id ?? "";
 
   if (commands.size == 0) {
     const files = await readdir(__dirname);

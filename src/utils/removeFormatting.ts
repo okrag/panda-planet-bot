@@ -1,1 +1,1 @@
-export const removeFormatting = (string: string) => string.replace(/_`*\[\]/g, "\\$&");
+export const removeFormatting = (string: string) => string.replace(/[_`*\[\]]/g, "\\$&");

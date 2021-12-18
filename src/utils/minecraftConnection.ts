@@ -2,6 +2,7 @@ import * as MinecraftServer from "minecraft-server-util";
 import { EventEmitter } from "events";
 import TypedEventEmitter from "typed-emitter";
 import { Guild } from "discord.js";
+import { DamageCause, EntityType } from "./minecraftTypes";
 
 export enum ConnectionResponse {
   SUCCESS,
@@ -74,9 +75,9 @@ export interface ReportEvent extends BaseEvent {
 export interface DeathEvent extends BaseEvent {
   type: "death";
   data: {
-    damageCause: "";
+    damageCause: DamageCause;
     deathMessage: string;
-    killerType?: "";
+    killerType?: EntityType;
     killerName?: string;
   };
 }

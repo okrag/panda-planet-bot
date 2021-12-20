@@ -1,8 +1,9 @@
 import * as MinecraftServer from "minecraft-server-util";
 import { EventEmitter } from "events";
 import TypedEventEmitter from "typed-emitter";
-import { Guild } from "discord.js";
+import { Base, Guild } from "discord.js";
 import { DamageCause, EntityType } from "./minecraftTypes";
+import { v4 as uuid } from "uuid";
 
 export enum ConnectionResponse {
   SUCCESS,
@@ -90,6 +91,7 @@ export interface BaseEvent {
   data: any;
   user: string;
   timestamp: number;
+  needsAcknowledgment: boolean;
 }
 
 export interface Events {
@@ -110,14 +112,48 @@ export class EventHandler extends (EventEmitter as new () => TypedEventEmitter<E
       const events: AnyEvent[] = JSON.parse(
         await Rcon.connection.send("discord_connection_events"),
       );
-      if (events.length > 0)
+      const dontNeedAcknowledgment = events.filter((v) => !v.needsAcknowledgment);
+      if (dontNeedAcknowledgment.length > 0)
         await Rcon.connection.send(
-          "discord_connection_acknowledge " + events.map((e) => e.id).join(";"),
+          "discord_connection_acknowledge " + dontNeedAcknowledgment.map((e) => e.id).join(";"),
         );
       return events;
     } catch (e) {
       return [];
     }
+  }
+
+  async sendEvent(
+    type: string,
+    data: any,
+    user: string,
+    timestamp: number,
+    needsAcknowledgment: boolean,
+    callback?: (data: any) => void,
+  ) {
+    const response = await Rcon.connection.send(
+      `discord_connection_send_event ${{
+        type,
+        data,
+        user,
+        timestamp,
+        needsAcknowledgment,
+        id: uuid(),
+      }}`,
+    );
+
+    callback?.(JSON.parse(response));
+  }
+
+  on<E extends keyof Events>(event: E, listener: Events[E]): this {
+    super.on(event, async (event: AnyEvent) => {
+      const response = await (listener as any)(event);
+      if (event.needsAcknowledgment)
+        await Rcon.connection.send(
+          `discord_connection_acknowledge ${event.id} ${JSON.stringify(response)}`,
+        );
+    });
+    return this;
   }
 
   constructor(interval: number, guild: Guild) {

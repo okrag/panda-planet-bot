@@ -130,6 +130,7 @@ const entityTypesTranslationsMap: Partial<Record<EntityType, string>> = {
 const damageCauseTranslationsMap: Partial<Record<DamageCause, string>> = {
   ENTITY_ATTACK: "Atak bytu",
   SUICIDE: "Samobójstwo",
+  FALL: "Upadek",
 };
 
 export const entityTypesTranslations = (type: EntityType) =>

@@ -5,57 +5,60 @@ import { EventHandler } from "./minecraftConnection";
 import { damageCauseTranslations, entityTypesTranslations } from "./minecraftTypes";
 import { removeFormatting } from "./removeFormatting";
 
-export const setup = async (client: Client) => {
-  const guild = getGuild(client);
-  if (!guild) return;
+export class EventManager {
+  public static eventHandler: EventHandler;
+  static async setup(client: Client) {
+    const guild = getGuild(client);
+    if (!guild) return;
 
-  const [reportsChannel, logsChannel, deathsChannel] = await getTextChannels(
-    guild,
-    process.env.REPORT_CHANNEL_ID,
-    process.env.LOGS_CHANNEL_ID,
-    process.env.DEATHS_CHANNEL_ID,
-  );
+    const [reportsChannel, logsChannel, deathsChannel] = await getTextChannels(
+      guild,
+      process.env.REPORT_CHANNEL_ID,
+      process.env.LOGS_CHANNEL_ID,
+      process.env.DEATHS_CHANNEL_ID,
+    );
 
-  if (!reportsChannel || !logsChannel || !deathsChannel) return;
+    if (!reportsChannel || !logsChannel || !deathsChannel) return;
 
-  const events = new EventHandler(10 * 1000, guild);
+    this.eventHandler = new EventHandler(10 * 1000, guild);
 
-  events.on("report", (event) => {
-    const member = guild.members.cache.get(event.user);
-    if (!member) return;
+    this.eventHandler.on("report", (event) => {
+      const member = guild.members.cache.get(event.user);
+      if (!member) return;
 
-    const embed = new MessageEmbed()
-      .setTitle("Report")
-      .setColor("#ff0000")
-      .addField("Gracz", member.user.tag)
-      .addField("Treść", event.data)
-      .setFooter(new Date(event.timestamp).toLocaleString());
-    reportsChannel.send({ content: "@here", embeds: [embed] });
-  });
+      const embed = new MessageEmbed()
+        .setTitle("Report")
+        .setColor("#ff0000")
+        .addField("Gracz", member.user.tag)
+        .addField("Treść", event.data)
+        .setFooter(new Date(event.timestamp).toLocaleString());
+      reportsChannel.send({ content: "@here", embeds: [embed] });
+    });
 
-  events.on("log", (event) => {
-    const embed = new MessageEmbed()
-      .setTitle(event.data.charAt(0).toUpperCase() + event.data.slice(1))
-      .setColor("#ff0000")
-      .addField("Gracz", removeFormatting(event.user))
-      .setFooter(new Date(event.timestamp).toLocaleString());
-    logsChannel.send({ embeds: [embed] });
-  });
+    this.eventHandler.on("log", (event) => {
+      const embed = new MessageEmbed()
+        .setTitle(event.data.charAt(0).toUpperCase() + event.data.slice(1))
+        .setColor("#ff0000")
+        .addField("Gracz", removeFormatting(event.user))
+        .setFooter(new Date(event.timestamp).toLocaleString());
+      logsChannel.send({ embeds: [embed] });
+    });
 
-  events.on("death", (event) => {
-    const embed = new MessageEmbed()
-      .setTitle("Log śmierci")
-      .setColor("#ff0000")
-      .addField("Gracz", removeFormatting(event.user))
-      .addField("Powód śmierci", damageCauseTranslations(event.data.damageCause))
-      .addField("Komunikat o śmierci", removeFormatting(event.data.deathMessage))
-      .setFooter(new Date(event.timestamp).toLocaleString());
+    this.eventHandler.on("death", (event) => {
+      const embed = new MessageEmbed()
+        .setTitle("Log śmierci")
+        .setColor("#ff0000")
+        .addField("Gracz", removeFormatting(event.user))
+        .addField("Powód śmierci", damageCauseTranslations(event.data.damageCause))
+        .addField("Komunikat o śmierci", removeFormatting(event.data.deathMessage))
+        .setFooter(new Date(event.timestamp).toLocaleString());
 
-    if (event.data.killerType)
-      embed.addField("Rodzaj zabójcy", entityTypesTranslations(event.data.killerType));
-    if (event.data.killerName)
-      embed.addField("Nazwa zabójcy", removeFormatting(event.data.killerName));
+      if (event.data.killerType)
+        embed.addField("Rodzaj zabójcy", entityTypesTranslations(event.data.killerType));
+      if (event.data.killerName)
+        embed.addField("Nazwa zabójcy", removeFormatting(event.data.killerName));
 
-    deathsChannel.send({ embeds: [embed] });
-  });
-};
+      deathsChannel.send({ embeds: [embed] });
+    });
+  }
+}

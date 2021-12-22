@@ -11,14 +11,15 @@ export class EventManager {
     const guild = getGuild(client);
     if (!guild) return;
 
-    const [reportsChannel, logsChannel, deathsChannel] = await getTextChannels(
+    const [reportsChannel, logsChannel, deathsChannel, testsChannel] = await getTextChannels(
       guild,
       process.env.REPORT_CHANNEL_ID,
       process.env.LOGS_CHANNEL_ID,
       process.env.DEATHS_CHANNEL_ID,
+      process.env.TESTS_CHANNEL_ID,
     );
 
-    if (!reportsChannel || !logsChannel || !deathsChannel) return;
+    if (!reportsChannel || !logsChannel || !deathsChannel || !testsChannel) return;
 
     this.eventHandler = new EventHandler(10 * 1000, guild);
 
@@ -59,6 +60,20 @@ export class EventManager {
         embed.addField("Nazwa zabójcy", removeFormatting(event.data.killerName));
 
       deathsChannel.send({ embeds: [embed] });
+    });
+    this.eventHandler.on("test", (event) => {
+      const embed = new MessageEmbed()
+        .setTitle("Log testu")
+        .setColor("#ff0000")
+        .addField("Twórca", removeFormatting(event.user))
+        .addField("Nazwa", event.data.name)
+        .addField("Testowane na", event.data.subject)
+        .addField("Start", new Date(event.data.start).toLocaleString("pl"))
+        .addField("Koniec", new Date(event.data.end).toLocaleString("pl"))
+        .addField("Id", event.data.id)
+        .setFooter(new Date(event.timestamp).toLocaleString("pl"));
+
+      testsChannel.send({ embeds: [embed] });
     });
   }
 }

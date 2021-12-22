@@ -65,7 +65,7 @@ export class Rcon {
   }
 }
 
-export type AnyEvent = LogEvent | ReportEvent | DeathEvent;
+export type AnyEvent = LogEvent | ReportEvent | DeathEvent | TestEvent;
 
 export interface LogEvent extends BaseEvent {
   type: "log";
@@ -85,6 +85,17 @@ export interface DeathEvent extends BaseEvent {
   };
 }
 
+export interface TestEvent extends BaseEvent {
+  type: "test";
+  data: {
+    subject: string;
+    name: string;
+    id: string;
+    start: number;
+    end: number;
+  };
+}
+
 export interface BaseEvent {
   id: string;
   type: string;
@@ -98,6 +109,7 @@ export interface Events {
   report: (event: ReportEvent) => void;
   log: (event: LogEvent) => void;
   death: (event: DeathEvent) => void;
+  test: (event: TestEvent) => void;
 }
 
 export const prepareGetMember = async (guild: Guild) => {

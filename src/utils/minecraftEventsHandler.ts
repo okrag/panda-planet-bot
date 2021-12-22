@@ -32,7 +32,7 @@ export class EventManager {
         .setColor("#ff0000")
         .addField("Gracz", member.user.tag)
         .addField("Treść", event.data)
-        .setFooter(new Date(event.timestamp).toLocaleString());
+        .setFooter(new Date(event.timestamp).toLocaleString("pl"));
       reportsChannel.send({ content: "@here", embeds: [embed] });
     });
 
@@ -41,7 +41,7 @@ export class EventManager {
         .setTitle(event.data.charAt(0).toUpperCase() + event.data.slice(1))
         .setColor("#ff0000")
         .addField("Gracz", removeFormatting(event.user))
-        .setFooter(new Date(event.timestamp).toLocaleString());
+        .setFooter(new Date(event.timestamp).toLocaleString("pl"));
       logsChannel.send({ embeds: [embed] });
     });
 
@@ -52,7 +52,7 @@ export class EventManager {
         .addField("Gracz", removeFormatting(event.user))
         .addField("Powód śmierci", damageCauseTranslations(event.data.damageCause))
         .addField("Komunikat o śmierci", removeFormatting(event.data.deathMessage))
-        .setFooter(new Date(event.timestamp).toLocaleString());
+        .setFooter(new Date(event.timestamp).toLocaleString("pl"));
 
       if (event.data.killerType)
         embed.addField("Rodzaj zabójcy", entityTypesTranslations(event.data.killerType));

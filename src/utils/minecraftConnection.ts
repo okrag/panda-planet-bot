@@ -1,7 +1,7 @@
 import * as MinecraftServer from "minecraft-server-util";
 import { EventEmitter } from "events";
 import TypedEventEmitter from "typed-emitter";
-import { Base, Guild } from "discord.js";
+import { Guild } from "discord.js";
 import { DamageCause, EntityType } from "./minecraftTypes";
 import { v4 as uuid } from "uuid";
 
@@ -25,11 +25,11 @@ export class Rcon {
   private static _instance: Rcon;
 
   constructor() {
-    this.connect();
+    // this.connect();
   }
 
   async send(cmd: string) {
-    if (this.currentConnection) return await this.currentConnection.execute(cmd);
+    // if (this.currentConnection) return await this.currentConnection.execute(cmd);
     const rcon = new MinecraftServer.RCON();
     await rcon.connect(process.env.SERVER_IP ?? "", Number(process.env.RCON_PORT ?? "0"));
     await rcon.login(process.env.RCON_PASSWORD ?? "");
@@ -44,25 +44,25 @@ export class Rcon {
   }
 
   async connect() {
-    if (this.currentConnection) return this;
-    const rcon = new MinecraftServer.RCON();
-    await rcon.connect(process.env.SERVER_IP ?? "", Number(process.env.RCON_PORT ?? "0"));
-    await rcon.login(process.env.RCON_PASSWORD ?? "");
-    this.currentConnection = rcon;
-    clearTimeout(this.connectionTimeout);
-    this.connectionTimeout = setTimeout(async () => {
-      await this.disconnect();
-      this.connect();
-    }, RECONNECTION_INTERVAL);
-    return this;
+    // if (this.currentConnection) return this;
+    // const rcon = new MinecraftServer.RCON();
+    // await rcon.connect(process.env.SERVER_IP ?? "", Number(process.env.RCON_PORT ?? "0"));
+    // await rcon.login(process.env.RCON_PASSWORD ?? "");
+    // this.currentConnection = rcon;
+    // clearTimeout(this.connectionTimeout);
+    // this.connectionTimeout = setTimeout(async () => {
+    //   await this.disconnect();
+    //   this.connect();
+    // }, RECONNECTION_INTERVAL);
+    // return this;
   }
-  async disconnect() {
-    if (!this.currentConnection) return;
-    clearTimeout(this.connectionTimeout);
-    await this.currentConnection.close();
-    this.currentConnection = undefined;
-    return this;
-  }
+  // async disconnect() {
+  //   if (!this.currentConnection) return;
+  //   clearTimeout(this.connectionTimeout);
+  //   await this.currentConnection.close();
+  //   this.currentConnection = undefined;
+  //   return this;
+  // }
 }
 
 export type AnyEvent = LogEvent | ReportEvent | DeathEvent | TestEvent;

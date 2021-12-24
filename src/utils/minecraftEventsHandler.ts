@@ -38,7 +38,7 @@ export class EventManager {
 
     this.eventHandler.on("log", (event) => {
       const embed = new MessageEmbed()
-        .setTitle(event.data.charAt(0).toUpperCase() + event.data.slice(1))
+        .setTitle(event.data.charAt(0).toUpperCase() + event.data.slice(1).toLowerCase())
         .setColor("#ff0000")
         .addField("Gracz", removeFormatting(event.user))
         .setFooter(new Date(event.timestamp).toLocaleString("pl"));
